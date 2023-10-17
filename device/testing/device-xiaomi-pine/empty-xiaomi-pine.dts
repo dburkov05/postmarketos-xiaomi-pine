@@ -1,0 +1,8 @@
+/dts-v1/;
+/plugin/;
+
+/ {
+    model = "Qualcomm Technologies, Xiaomi Redmi 7A (pine)";
+    compatible = "qcom,sdm439";
+    qcom,board-id = <0xb 2>;
+};

@@ -2,8 +2,8 @@
 # Kernel config based on: arch/arm64/configs/lineageos_mi439_defconfig
 
 pkgname=linux-xiaomi-pine
-pkgver=4.9.337
-pkgrel=1
+pkgver=6.4.1
+pkgrel=999
 pkgdesc="Xiaomi Redmi 7A kernel fork"
 arch="aarch64"
 _carch="arm64"
@@ -23,37 +23,41 @@ makedepends="
 "
 
 # Source
-_repository="android_kernel_xiaomi_sdm439"
-_commit="2bcfae17be1b3e70d41ee89f6fed7825627d952b"
+_repository="dburkov05/linux-sdm439"
+_commit="da8c8f08680f944c31a6e5206307cfb4ef098376"
 _config="config-$_flavor.$arch"
 source="
-	$pkgname-$_commit.tar.gz::https://github.com/LineageOS/$_repository/archive/$_commit.tar.gz
+	$pkgname-$_commit.tar.gz::https://github.com/$_repository/archive/$_commit.tar.gz
 	$_config
 "
 builddir="$srcdir/$_repository-$_commit"
-_outdir="out"
 
 prepare() {
 	default_prepare
-	. downstreamkernel_prepare
+	cp "$srcdir/config-$_flavor.$arch" .config
 }
 
 build() {
 	unset LDFLAGS
-	make O="$_outdir" ARCH="$_carch" CC="${CC:-gcc}" \
-		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-$_flavor"
 }
 
 package() {
-	downstreamkernel_package "$builddir" "$pkgdir" "$_carch" \
-		"$_flavor" "$_outdir"
-	unset LDFLAGS
-	make O="$_outdir" ARCH="$_carch" CC="${CC:-gcc}" \
-		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS" \
-		INSTALL_MOD_PATH="$pkgdir" modules_install
-}
+	mkdir -p "$pkgdir"/boot
 
+	make zinstall modules_install dtbs_install \
+		ARCH="$_carch" \
+		INSTALL_PATH="$pkgdir"/boot \
+		INSTALL_MOD_PATH="$pkgdir" \
+		INSTALL_MOD_STRIP=1 \
+		INSTALL_DTBS_PATH="$pkgdir/boot/dtbs"
+	rm -f "$pkgdir"/lib/modules/*/build "$pkgdir"/lib/modules/*/source
+
+	install -Dm644 "$builddir/include/config/kernel.release" \
+		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
+}
 sha512sums="
-491349581f0e0ffcbf59c20367f6d2e1a4f82d909b17398bc80db2711f543f845ddad4b8f0d0ae31f5a876e2ce1873315935700c1a42cd1f9abff1aa0d4253ae  linux-xiaomi-pine-2bcfae17be1b3e70d41ee89f6fed7825627d952b.tar.gz
+544f0df352a48dee98710e0d11abd779fec2e7d8d31f29317e4dfd75f349077384c2a1f086a19ca65b7ffc976c51d1344ee882c5d581497a864a5a34781bea6c  linux-xiaomi-pine-da8c8f08680f944c31a6e5206307cfb4ef098376.tar.gz
 fb1c6eea21b075eaa20b95c63b18988315686b42e455c396c16ab782f6fc4edf80def5256a087b753d1f28af3e583e8ee5817acb32f4108e202dca425494998a  config-xiaomi-pine.aarch64
 "

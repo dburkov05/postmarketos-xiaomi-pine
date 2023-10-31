@@ -20,7 +20,6 @@ makedepends="
 source="
 	deviceinfo
 	etc-lightdm-lightdm.conf
-	empty-xiaomi-pine.dts
 "
 
 subpackages="
@@ -30,17 +29,10 @@ subpackages="
 
 build() {
 	devicepkg_build $startdir $pkgname
-
-	dtc -O dtb -o "$srcdir/empty-xiaomi-pine.dtbo" -b 0 -@ \
-		"$srcdir/empty-xiaomi-pine.dts"
-
-	mkdtboimg create "$srcdir/dtbo.img" --page_size=4096 \
-		"$srcdir/empty-xiaomi-pine.dtbo"
 }
 
 package() {
 	devicepkg_package $startdir $pkgname
-	install -Dm644 "$srcdir/dtbo.img" "$pkgdir/boot/dtbo.img"
 }
 
 nonfree_firmware() {
@@ -61,7 +53,6 @@ fix_lightdm() {
 		"$subpkgdir"/etc/lightdm/lightdm.conf
 }
 sha512sums="
-9bc58ac649c16d2f98fa5c5bfaa0b186758396b8ff8fc04b89f9800d707cf9a1867f00a089e65a025e5a548e16c02980b4847681aab7c81f9f4d99cd6ca73246  deviceinfo
+c43efd9d0da622f3034b2dd1a74001112870a7d8b1fc8959968548d76f80c99b9b7ea5e14c6825e878120be776bc41628220f404a831b4f7249203d7cf4401e2  deviceinfo
 861270c6bc0b2a3e6cd389c21c8c895e62de8cf8bec6fcf23c178f8cbaae855d62b0ee98692671ab4f518d84cb43dd0b2fe46f5a609f65af6a6c06e0fdbb6d0c  etc-lightdm-lightdm.conf
-3604ef934d95c24031d6230c0c2d03d4f585806e86e51af70f20d4f75b5232ad11324ac0550787fb13e4c4a3839f6d4b0e979db126dba067bac6862c90e2d0fe  empty-xiaomi-pine.dts
 "

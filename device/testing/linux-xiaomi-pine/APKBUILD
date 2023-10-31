@@ -2,7 +2,7 @@
 # Kernel config based on: arch/arm64/configs/lineageos_mi439_defconfig
 
 pkgname=linux-xiaomi-pine
-pkgver=6.4.1
+pkgver=6.4.9
 pkgrel=999
 pkgdesc="Xiaomi Redmi 7A kernel fork"
 arch="aarch64"
